@@ -1,13 +1,45 @@
+# =========================
+# Python & Django Core
+# =========================
 # Virtual Environments
 venv/
 env/
 
-# Environment Variables (Secrets)
-.env
-
 # Python Cache
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
 
 # Local Django Database
 db.sqlite3
+
+# =========================
+# Security & Secrets
+# =========================
+# Environment Variables
+.env
+
+# =========================
+# App Data & Assets
+# =========================
+# User Uploaded Files (CRITICAL for Medlock ClaimDocuments)
+media/
+
+# Collected Static Files (Used during deployment)
+staticfiles/
+static_root/
+
+# =========================
+# OS & Editor Files
+# =========================
+# Mac/Windows system files
+.DS_Store
+Thumbs.db
+
+# VS Code / PyCharm settings
+.vscode/
+.idea/
+
+# Application Logs
+*.log
