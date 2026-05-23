@@ -12,6 +12,11 @@ class AdminSerializer(serializers.ModelSerializer):
         model = Admin
         fields = '__all__'
 
+class ThemeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Theme
+        fields = '__all__'
+
 class HospitalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hospital

@@ -10,6 +10,7 @@ from .models import *
 # 1. SAAS & CORE
 admin.site.register(Subscription)
 admin.site.register(Admin)
+admin.site.register(Theme)
 admin.site.register(Hospital)
 
 # 2. PLUGIN & RBAC

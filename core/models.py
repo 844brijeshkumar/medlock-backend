@@ -3,11 +3,35 @@ from django.db import models
 from django.db.models import Q
 
 # =============================================================================
+# BASE ABSTRACT MODEL (For 12-Digit Custom IDs)
+# =============================================================================
+class CustomIDModel(models.Model):
+    """
+    Abstract model that replaces the default auto-incrementing ID with a 
+    12-digit BigIntegerField starting at 190080070011.
+    """
+    id = models.BigIntegerField(primary_key=True, editable=False)
+
+    class Meta:
+        abstract = True # Tells Django NOT to create a table for this class
+
+    def save(self, *args, **kwargs):
+        if not self.id:  # Only generate if this is a new record
+            # self.__class__ dynamically looks at whichever model is being saved
+            last_record = self.__class__.objects.order_by('-id').first()
+            if last_record:
+                self.id = last_record.id + 1
+            else:
+                self.id = 190080070011
+        super().save(*args, **kwargs)
+
+
+# =============================================================================
 # 1. SAAS & CORE ADMIN
 # =============================================================================
 
 class Subscription(models.Model):
-    tier_name = models.CharField(max_length=100)
+    tier_name = models.CharField(max_length=100, unique=True)
     max_branches = models.IntegerField()
     max_staffs = models.IntegerField()
     is_active = models.BooleanField(default=True)
@@ -15,12 +39,21 @@ class Subscription(models.Model):
     def __str__(self):
         return self.tier_name
 
-class Admin(models.Model):
+class Theme(models.Model):
+    name = models.CharField(max_length=100)
+    primary = models.CharField(max_length=7, null=True)
+    secondary = models.CharField(max_length=7, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+# Updated to use CustomIDModel
+class Admin(CustomIDModel):
     name = models.CharField(max_length=150)
     contact = models.CharField(max_length=15, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True, null=True, blank=True)
-    theme = models.CharField(max_length=10, null=True, blank=True)
-    system_ip = models.CharField(max_length=25, unique=True, null=True, blank=True)
+    theme = models.ForeignKey(Theme, on_delete=models.SET_NULL, null=True, blank=True)
     subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -28,7 +61,8 @@ class Admin(models.Model):
     def __str__(self):
         return self.name
 
-class Hospital(models.Model):
+# Updated to use CustomIDModel
+class Hospital(CustomIDModel):
     admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     location = models.TextField(null=True, blank=True)
@@ -36,6 +70,7 @@ class Hospital(models.Model):
 
     def __str__(self):
         return self.name
+
 
 # =============================================================================
 # 2. PLUGIN & RBAC ENGINE
@@ -77,7 +112,7 @@ class PermissionMapping(models.Model):
 class PermissionOverride(models.Model):
     admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
     staff_type = models.CharField(max_length=3)
-    staff_id = models.CharField(max_length=50) # Kept as string to accommodate different staff models
+    staff_id = models.CharField(max_length=50) 
     permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
     is_allowed = models.BooleanField()
     assigned_by = models.CharField(max_length=50)
@@ -85,6 +120,7 @@ class PermissionOverride(models.Model):
 
     class Meta:
         unique_together = ('staff_id', 'staff_type', 'permission')
+
 
 # =============================================================================
 # 3. INFRASTRUCTURE & BIOMETRICS
@@ -120,11 +156,13 @@ class BiometricDeviceMapping(models.Model):
             )
         ]
 
+
 # =============================================================================
 # 4. HR, ATTENDANCE & DEPARTMENTS
 # =============================================================================
 
-class Department(models.Model):
+# Updated to use CustomIDModel
+class Department(CustomIDModel):
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     building_id = models.CharField(max_length=50, null=True, blank=True)
@@ -134,7 +172,8 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
-class Ward(models.Model):
+# Updated to use CustomIDModel
+class Ward(CustomIDModel):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
@@ -142,7 +181,8 @@ class Ward(models.Model):
     def __str__(self):
         return self.name
 
-class Room(models.Model):
+# Updated to use CustomIDModel
+class Room(CustomIDModel):
     ward = models.ForeignKey(Ward, on_delete=models.CASCADE)
     room_number = models.CharField(max_length=20)
     is_active = models.BooleanField(default=True)
@@ -152,7 +192,8 @@ class Bed(models.Model):
     bed_identifier = models.CharField(max_length=20)
     is_active = models.BooleanField(default=True)
 
-class Doctor(models.Model):
+# Updated to use CustomIDModel
+class Doctor(CustomIDModel):
     name = models.CharField(max_length=150)
     adhaar = models.CharField(max_length=20, unique=True, null=True, blank=True)
     contact = models.CharField(max_length=15, null=True, blank=True)
@@ -166,7 +207,8 @@ class Doctor(models.Model):
     def __str__(self):
         return self.name
 
-class Nurse(models.Model):
+# Updated to use CustomIDModel
+class Nurse(CustomIDModel):
     name = models.CharField(max_length=150)
     adhaar = models.CharField(max_length=20, unique=True, null=True, blank=True)
     contact = models.CharField(max_length=15, null=True, blank=True)
@@ -176,7 +218,8 @@ class Nurse(models.Model):
     department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
-class Receptionist(models.Model):
+# Updated to use CustomIDModel
+class Receptionist(CustomIDModel):
     name = models.CharField(max_length=150)
     adhaar = models.CharField(max_length=20, unique=True, null=True, blank=True)
     contact = models.CharField(max_length=15, null=True, blank=True)
@@ -206,6 +249,7 @@ class StaffAttendance(models.Model):
 
     class Meta:
         unique_together = ('staff_id', 'date')
+
 
 # =============================================================================
 # 5. PATIENT ECOSYSTEM
@@ -258,6 +302,7 @@ class UserBloodDonation(models.Model):
     blood_group = models.CharField(max_length=5)
     quantity_ml = models.IntegerField(default=450)
     donation_date = models.DateTimeField(auto_now_add=True)
+
 
 # =============================================================================
 # 6. NHCX CLAIMS & DISPATCH
@@ -321,10 +366,9 @@ class Claim(models.Model):
     admin_payload = models.JSONField(null=True, blank=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True) # Django handles this nicely with auto_now
+    updated_at = models.DateTimeField(auto_now=True)
 
 class ClaimMlcDetail(models.Model):
-    # OneToOne ensures it uses claim_id as the primary key
     claim = models.OneToOneField(Claim, on_delete=models.CASCADE, primary_key=True)
     fir_number = models.CharField(max_length=100)
     police_station = models.CharField(max_length=150)

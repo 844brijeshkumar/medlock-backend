@@ -8,6 +8,7 @@ router = DefaultRouter()
 # 1. SAAS & CORE ADMIN
 router.register(r'subscriptions', SubscriptionViewSet)
 router.register(r'admins', AdminViewSet)
+router.register(r'themes', ThemeViewSet)
 router.register(r'hospitals', HospitalViewSet)
 
 # 2. PLUGIN & RBAC ENGINE
