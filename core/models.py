@@ -51,6 +51,7 @@ class Theme(models.Model):
 # Updated to use CustomIDModel
 class Admin(CustomIDModel):
     name = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)
     contact = models.CharField(max_length=15, null=True, blank=True)
     email = models.EmailField(max_length=100, unique=True, null=True, blank=True)
     theme = models.ForeignKey(Theme, on_delete=models.SET_NULL, null=True, blank=True)
@@ -65,6 +66,7 @@ class Admin(CustomIDModel):
 class Hospital(CustomIDModel):
     admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)
     location = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
@@ -165,6 +167,7 @@ class BiometricDeviceMapping(models.Model):
 class Department(CustomIDModel):
     hospital = models.ForeignKey(Hospital, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    password = models.CharField(max_length=128)
     building_id = models.CharField(max_length=50, null=True, blank=True)
     floor = models.CharField(max_length=20, null=True, blank=True)
     is_active = models.BooleanField(default=True)
@@ -176,6 +179,7 @@ class Department(CustomIDModel):
 class Ward(CustomIDModel):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    password = models.CharField(max_length=128)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -185,6 +189,7 @@ class Ward(CustomIDModel):
 class Room(CustomIDModel):
     ward = models.ForeignKey(Ward, on_delete=models.CASCADE)
     room_number = models.CharField(max_length=20)
+    password = models.CharField(max_length=128)
     is_active = models.BooleanField(default=True)
 
 class Bed(models.Model):
@@ -195,6 +200,7 @@ class Bed(models.Model):
 # Updated to use CustomIDModel
 class Doctor(CustomIDModel):
     name = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)
     adhaar = models.CharField(max_length=20, unique=True, null=True, blank=True)
     contact = models.CharField(max_length=15, null=True, blank=True)
     gmail = models.EmailField(max_length=100, unique=True, null=True, blank=True)
@@ -210,6 +216,7 @@ class Doctor(CustomIDModel):
 # Updated to use CustomIDModel
 class Nurse(CustomIDModel):
     name = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)
     adhaar = models.CharField(max_length=20, unique=True, null=True, blank=True)
     contact = models.CharField(max_length=15, null=True, blank=True)
     gmail = models.EmailField(max_length=100, unique=True, null=True, blank=True)
@@ -221,6 +228,7 @@ class Nurse(CustomIDModel):
 # Updated to use CustomIDModel
 class Receptionist(CustomIDModel):
     name = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)
     adhaar = models.CharField(max_length=20, unique=True, null=True, blank=True)
     contact = models.CharField(max_length=15, null=True, blank=True)
     gmail = models.EmailField(max_length=100, unique=True, null=True, blank=True)
@@ -257,6 +265,7 @@ class StaffAttendance(models.Model):
 
 class User(models.Model):
     name = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)
     contact = models.CharField(max_length=15, unique=True, null=True, blank=True)
     gmail = models.EmailField(max_length=100, null=True, blank=True)
     adhaar = models.CharField(max_length=20, unique=True, null=True, blank=True)

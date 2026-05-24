@@ -1,6 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import *
+
+# 1. Import your custom Login view from the auth file
+from .views.auth import RoleBasedLoginView
+
+# 2. Import ALL your ViewSets from the new viewset.py file
+from .views.viewset import *
 
 # The router automatically generates endpoints for all your ViewSets
 router = DefaultRouter()
@@ -56,5 +61,9 @@ router.register(r'claim-prescriptions', ClaimPrescriptionViewSet)
 router.register(r'claim-govt-packages', ClaimGovtPackageViewSet)
 
 urlpatterns = [
+    # Dynamic Role Login Endpoint (e.g., /api/dr/login/)
+    path('<str:role>/login/', RoleBasedLoginView.as_view(), name='role-login'),
+    
+    # All CRUD endpoints
     path('', include(router.urls)),
 ]
