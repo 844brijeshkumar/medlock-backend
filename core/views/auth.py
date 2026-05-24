@@ -5,7 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 import re
 
 # Import all your models that can log in
-from ..models import Admin, Hospital, Department, Ward, Room, Doctor, Nurse, Receptionist, User
+from ..models import Admin, Hospital, Department, Ward, Room, Doctor, Nurse, Receptionist
 
 class RoleBasedLoginView(APIView):
     """
@@ -46,26 +46,22 @@ class RoleBasedLoginView(APIView):
             if role in ["admin", "ad"]:
                 user_instance = Admin.objects.get(id=numeric_id)
                 role_name = "admin"
-            elif role == "hospital":
+            elif role in ["hospital", "hp"]:
                 user_instance = Hospital.objects.get(id=numeric_id)
-            elif role == "department":
+            elif role in ["department", "dp"]:
                 user_instance = Department.objects.get(id=numeric_id)
-            elif role == "ward":
+            elif role in ["ward", "wr"]  :
                 user_instance = Ward.objects.get(id=numeric_id)
-            elif role == "room":
+            elif role in ["room", "rm"]:
                 user_instance = Room.objects.get(id=numeric_id)
-            elif role == "doctor":
+            elif role in ["doctor", "dr"]:
                 user_instance = Doctor.objects.get(id=numeric_id)
-            elif role == "nurse":
+            elif role in ["nurse", "ns"]:
                 user_instance = Nurse.objects.get(id=numeric_id)
-            elif role == "receptionist":
+            elif role in ["receptionist", "rs"]:
                 user_instance = Receptionist.objects.get(id=numeric_id)
-            elif role == "user": # Patient ecosystem
-                # Note: Patient/User model uses an auto-incrementing ID in your models, not the 12-digit one.
-                # Assuming you pass their standard integer ID here.
-                user_instance = User.objects.get(id=numeric_id)
             else:
-                return Response({"error": "Invalid login role specified in URL."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Invalid login."}, status=status.HTTP_400_BAD_REQUEST)
                 
         except Exception: # Catches DoesNotExist
             return Response({"error": "User with this ID not found."}, status=status.HTTP_404_NOT_FOUND)
